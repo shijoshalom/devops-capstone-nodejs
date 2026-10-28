@@ -1,0 +1,13 @@
+{
+  "name": "devops-capstone-nodejs",
+  "version": "1.0.0",
+  "description": "End-to-end DevOps capstone web application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
