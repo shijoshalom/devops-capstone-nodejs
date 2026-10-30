@@ -1,6 +1,7 @@
+
 pipeline {
     agent {
-    label 'docker-agent'
+        label 'docker-agent'
     }
 
     environment {
@@ -32,7 +33,7 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarScanner'
 
-                     withSonarQubeEnv('SonarQube') {
+                    withSonarQubeEnv('SonarQube') {
                         sh """
                             "${scannerHome}/bin/sonar-scanner" \
                             -Dsonar.projectKey=devops-capstone-nodejs \
@@ -47,15 +48,34 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh """
-                    docker build -t \${DOCKER_IMAGE}:\${BUILD_NUMBER} .
-                """
+                sh 'docker build -t "$DOCKER_IMAGE:$BUILD_NUMBER" .'
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                echo 'Docker Hub credentials will be configured before this stage is executed.'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    sh '''
+                        echo "$DOCKERHUB_TOKEN" | docker login \
+                            -u "$DOCKERHUB_USER" --password-stdin
+
+                        docker tag "$DOCKER_IMAGE:$BUILD_NUMBER" \
+                            "$DOCKERHUB_USER/devops-capstone-nodejs:$BUILD_NUMBER"
+
+                        docker push "$DOCKERHUB_USER/devops-capstone-nodejs:$BUILD_NUMBER"
+
+                        docker tag "$DOCKER_IMAGE:$BUILD_NUMBER" \
+                            "$DOCKERHUB_USER/devops-capstone-nodejs:latest"
+
+                        docker push "$DOCKERHUB_USER/devops-capstone-nodejs:latest"
+
+                        docker logout
+                    '''
+                }
             }
         }
     }
