@@ -32,9 +32,9 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarScanner'
 
-                    withSonarQubeEnv('SonarQube') {
+                     withSonarQubeEnv('SonarQube') {
                         sh """
-                            "\${scannerHome}/bin/sonar-scanner" \
+                            "${scannerHome}/bin/sonar-scanner" \
                             -Dsonar.projectKey=devops-capstone-nodejs \
                             -Dsonar.projectName=devops-capstone-nodejs \
                             -Dsonar.sources=. \
