@@ -45,3 +45,4 @@ Prometheus, Grafana, and Node Exporter will be used for infrastructure monitorin
 
 ## Automation
 Bash scripts and cron jobs will automate backups and log cleanup.
+checking The webhook trigger is working
